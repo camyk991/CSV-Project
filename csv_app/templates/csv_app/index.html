@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSV PROJECT</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      #table-name-label,
+      #split-file-label,
+      #send-mail-label {
+        display: none;
+      }
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      #form {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      input[type="file"],
+      input[type="number"],
+      input[type="text"],
+      input[type="email"],
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 5px;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      #info-box {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #d3f5d3;
+        border: 1px solid #4caf50;
+        border-radius: 5px;
+        color: #4caf50;
+      }
+
+      .container {
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>CSV PROJECT</h1>
+      <form id="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="csv_file" accept=".csv" required />
+        <label
+          >Podziel plik na części
+          <input type="checkbox" name="" id="split-file"
+        /></label>
+        <label id="split-file-label"
+          >Po ile wierszy podzielić:
+          <input type="number" name="rows-per-file" min="2"
+        /></label>
+        <select id="extSelect" name="output-extension">
+          <option selected value="csv">CSV</option>
+          <option value="xlsx">XLSX</option>
+          <option value="sql">MYSQL</option>
+        </select>
+        <label id="table-name-label"
+          >Nazwa tabeli: <input autocomplete="off" type="text" name="table-name"
+        /></label>
+        <label>
+          Wyślij na maila <input type="checkbox" name="" id="send-to-mail" />
+        </label>
+        <label id="send-mail-label">
+          Adres e-mail: <input id="emailInput" type="email" name="email" />
+        </label>
+
+        <button id="submit-button" type="submit">Konwertuj i pobierz</button>
+      </form>
+   
+      <p id="info-box">{{message}}</p>
+    </div>
+
+    <script>
+      jQuery(function () {
+        $("#extSelect").on("input", function () {
+          if ($(this).val() == "sql") {
+            $("#table-name-label").show();
+          } else {
+            $("#table-name-label").hide();
+            $("#table-name-label input").val("");
+          }
+        });
+
+        $("#split-file").on("input", function () {
+          if ($(this).is(":checked")) {
+            $("#split-file-label").show();
+          } else {
+            $("#split-file-label").hide();
+            $("#split-file-label input").val("");
+          }
+        });
+
+        $("#send-to-mail").on("input", function () {
+          if ($(this).is(":checked")) {
+            $("#send-mail-label").show();
+            $("#submit-button").text("Wyślij na maila");
+          } else {
+            $("#send-mail-label").hide();
+            $("#send-mail-label input").val("");
+            $("#submit-button").text("Konwertuj i pobierz");
+          }
+        });
+
+        $("#submit-button").on("click", function () {
+          $("#info-box").hide();
+        });
+
+        if ($("#info-box").text() == "") {
+          $('#info-box').hide();
+        } else {
+          $('#info-box').show();
+        }
+      });
+    </script>
+  </body>
+</html>
